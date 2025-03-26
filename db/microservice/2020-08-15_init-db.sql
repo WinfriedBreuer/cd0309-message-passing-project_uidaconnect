@@ -1,7 +1,11 @@
+DROP TABLE IF EXISTS location;
+DROP TABLE IF EXISTS person;
+
 CREATE TABLE person (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR NOT NULL,
     last_name VARCHAR NOT NULL,
+    full_name VARCHAR GENERATED ALWAYS AS (first_name || ' ' || last_name) STORED,
     company_name VARCHAR NOT NULL
 );
 
