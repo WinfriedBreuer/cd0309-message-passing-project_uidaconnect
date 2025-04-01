@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-=======
 DROP TABLE IF EXISTS location;
 DROP TABLE IF EXISTS person;
 
->>>>>>> 01099d32445c4ed3408c2c38d1b7732ced2ec070
 CREATE TABLE person (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR NOT NULL,
