@@ -11,4 +11,5 @@ class Person(db.Model):
     id = Column(Integer, primary_key=True)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
+    full_name = Column(String, nullable=True)
     company_name = Column(String, nullable=False)
