@@ -1,12 +1,15 @@
-FROM python:3.7-alpine
+FROM python:3.7-slim-bullseye
 
-WORKDIR .
+WORKDIR /app
 
-RUN apk add --no-cache gcc musl-dev linux-headers geos libc-dev postgresql-dev
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+COPY requirements.txt /app/requirements.txt
+
+RUN python3 -m pip install --upgrade pip setuptools wheel && \
+    pip install -r requirements.txt
+
 
 EXPOSE 5000
 
-COPY . .
+COPY . /app
+
 CMD ["flask", "run", "--host", "0.0.0.0"]
