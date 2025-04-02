@@ -59,7 +59,7 @@ def insert_location_into_db(conn, location_message):
                 int(location_dict["person_id"]),
                 float(location_dict["latitude"]),
                 float(location_dict["longitude"]),
-                datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             )
             cursor.execute(insert_sql)
             conn.commit()
