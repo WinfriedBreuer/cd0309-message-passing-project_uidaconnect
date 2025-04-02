@@ -16,4 +16,4 @@ RUN apk add --no-cache gcc musl-dev linux-headers geos libc-dev postgresql-dev &
 
 COPY . /app/
 
-CMD ["python", "locations_consumer_kafka2db.py"]
+CMD ["python", "kafka_locations_consumer.py"]
