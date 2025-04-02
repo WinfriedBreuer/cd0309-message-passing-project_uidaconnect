@@ -55,7 +55,7 @@ def insert_location_into_db(conn, location_message):
     location_dict = json.loads(location_message)
     with conn.cursor() as cursor:
         try:
-            insert_sql = "INSERT INTO location (person_id, coordinate, creation_time) VALUES ({}, ST_Point({}, {}), {})".format(
+            insert_sql = "INSERT INTO location (person_id, coordinate, creation_time) VALUES ({}, ST_Point({}, {}), '{}')".format(
                 int(location_dict["person_id"]),
                 float(location_dict["latitude"]),
                 float(location_dict["longitude"]),
