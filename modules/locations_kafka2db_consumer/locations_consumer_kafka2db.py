@@ -57,8 +57,8 @@ def insert_location_into_db(conn, location_message):
         try:
             insert_sql = "INSERT INTO location (person_id, coordinate, creation_time) VALUES ({}, ST_Point({}, {}), {})".format(
                 int(location_dict["person_id"]),
-                int(location_dict["latitude"]),
-                int(location_dict["longitude"]),
+                float(location_dict["latitude"]),
+                float(location_dict["longitude"]),
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             )
             cursor.execute(insert_sql)
