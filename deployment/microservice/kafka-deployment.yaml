@@ -37,16 +37,16 @@ ports:
   client:
     enabled: true
     port: 9092
-  controller:
-    enabled: true
-    port: 9093
   interbroker:
     enabled: true
-    port: 9094
-  external:
+    port: 9093
+  controller:
     enabled: true
-    port: 9095
-    servicePort: 9095
+    port: 9094
+  # external:
+  #   enabled: true
+  #   port: 9095
+  #   servicePort: 9095
 
 externalAccess:
   enabled: true
@@ -55,7 +55,7 @@ externalAccess:
   controller:
     service:
       type: NodePort
-      nodePorts[0]: '9095'
+      nodePorts[0]: '9092'
       domain: localhost
 
 rbac:
@@ -76,11 +76,11 @@ nodeport:
 
 extraEnvVars:
 - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
-  value: "CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT"
+  value: "CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,CLIENT:PLAINTEXT"
 - name: KAFKA_CFG_LISTENERS
-  value: "CLIENT://:9092,CONTROLLER://:9093,INTERNAL://:9094,EXTERNAL://:9095"
+  value: "CONTROLLER://:9093,INTERNAL://:9094,CLIENT://:9092"
 - name: KAFKA_CFG_ADVERTISED_LISTENERS
-  value: "INTERNAL://$(MY_POD_NAME).kafka-headless.$(MY_POD_NAMESPACE).svc.cluster.local:9094,CLIENT://$(MY_POD_NAME).kafka-headless.$(MY_POD_NAMESPACE).svc.cluster.local:9092,EXTERNAL://$(MY_POD_NAME).kafka-headless.$(MY_POD_NAMESPACE).svc.cluster.local:9095"
+  value: "INTERNAL://$(MY_POD_NAME).kafka-headless.$(MY_POD_NAMESPACE).svc.cluster.local:9094,CLIENT://$(MY_POD_NAME).kafka-headless.$(MY_POD_NAMESPACE).svc.cluster.local:9092"
 # enable auto create topics
 # - name: KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE
 #  value: "true"
