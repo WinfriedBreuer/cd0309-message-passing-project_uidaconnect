@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: udaconnect-grpc-kafka-locations-producer
+  name: udaconnect-grpc-kafka-locations-producer
+spec:
+  ports:
+  - name: "udaconnect-kafka-locations-producer"
+    port: 5000
+    targetPort: 5000
+    nodePort: 30003
+  selector:
+    service: udaconnect-grpc-kafka-locations-producer
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: udaconnect-grpc-kafka-locations-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: udaconnect-grpc-kafka-locations-producer
+  template:
+    metadata:
+      labels:
+        app: udaconnect-grpc-kafka-locations-producer
+    spec:
+      containers:
+      - name: udaconnect-grpc-kafka-locations-producer
+        image: winfriedbreuer/udaconnect-grpc-kafka-locations-producer:latest
+        imagePullPolicy: "Always"
+        env:
+        - name: KAFKA_URL
+          valueFrom:
+            configMapKeyRef:
+              name: kafka-env
+              key: KAFKA_URL
+        - name: KAFKA_TOPIC
+          valueFrom:
+            configMapKeyRef:
+              name: kafka-env
+              key: KAFKA_TOPIC

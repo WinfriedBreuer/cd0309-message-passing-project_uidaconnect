@@ -5,8 +5,11 @@ from datetime import datetime
 from typing import Dict
 
 import psycopg2
+import requests
 from kafka import KafkaConsumer
 from marshmallow import Schema, fields
+
+LOCATIONS_SERVICE_ENDPOINT = os.environ["LOCATIONS_SERVICE_ENDPOINT"]
 
 DB_USERNAME = os.environ["DB_USERNAME"]
 DB_PASSWORD = os.environ["DB_PASSWORD"]
@@ -68,6 +71,13 @@ def insert_location_into_db(conn, location_message):
         except Exception as e:
             logger.error(f"error when inserting message . reason: {e}")
 
+def insert_location_into_db_via_connection_api(location_message):
+    try:
+        location_dict = json.loads(location_message)
+        requests.post(LOCATIONS_SERVICE_ENDPOINT, json=location_dict)
+        logger.info(f"Inserted message into database: {location_message}")
+    except Exception as e:
+        logger.error(f"error when inserting message . reason: {e}")
 
 # Create the kafka consumer
 kafka_location_consumer = KafkaConsumer(
@@ -91,7 +101,8 @@ with psycopg2.connect(
             logger.info(f"Valid message: {location_message_dict.value}")
 
             # Insert the message into the database
-            insert_location_into_db(conn, location_message_dict.value)
+            #insert_location_into_db(conn, location_message_dict.value)
+            insert_location_into_db_via_connection_api(location_message_dict.value)
         else: 
             logger.warning(f"Invalid message: {location_message_dict.value}")
 

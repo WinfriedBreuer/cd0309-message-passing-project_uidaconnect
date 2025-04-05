@@ -2,3 +2,4 @@ kafka-python==2.1.4
 psycopg2_binary==2.9.10
 SQLAlchemy== 2.0.40
 marshmallow>=3.26.1
+requests==2.31.0
