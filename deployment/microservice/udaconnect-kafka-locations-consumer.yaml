@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: udaconnect-kafka_locations_consumer
+  name: udaconnect-kafka-locations-consumer
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: udaconnect-kafka_locations_consumer
+      app: udaconnect-kafka-locations-consumer
   template:
     metadata:
       labels:
-        app: udaconnect-kafka_locations_consumer
+        app: udaconnect-kafka-locations-consumer
     spec:
       containers:
-      - name: udaconnect-kafka_locations_consumer
-        image: winfriedbreuer/udaconnect-kafka_locations_consumer:latest
+      - name: udaconnect-kafka-locations-consumer
+        image: winfriedbreuer/udaconnect-kafka-locations-consumer:latest
         imagePullPolicy: "Always"
         env:
         - name: DB_USERNAME
@@ -53,6 +53,6 @@ spec:
               name: kafka-env
               key: KAFKA_TOPIC
         - name: LOCATIONS_SERVICE_URL
-        # This is the URL of the udaconnect-locations-api service
-        # in the udaconnect namespace. It is used to send location data.
-        value: "http://udaconnect-locations-api.udaconnect.svc.cluster.local:5000/api/locations"
+          # This is the URL of the udaconnect-locations-api service
+          # in the udaconnect namespace. It is used to send location data.
+          value: "http://udaconnect-locations-api.udaconnect.svc.cluster.local:5000/api/locations"
