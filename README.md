@@ -76,44 +76,44 @@ Type `exit` to exit the virtual OS and you will find yourself back in your compu
 Afterwards, you can test that `kubectl` works by running a command like `kubectl describe services`. It should not return any errors.
 
 ### Steps
-1. `kubectl apply -f deployment/db-configmap.yaml` - Set up environment variables for the pods
-2. `kubectl apply -f deployment/db-secret.yaml` - Set up secrets for the pods
-3. `kubectl apply -f deployment/postgres.yaml` - Set up a Postgres database running PostGIS
-4. `kubectl apply -f deployment/udaconnect-api.yaml` - Set up the service and deployment for the API
-5. `kubectl apply -f deployment/udaconnect-app.yaml` - Set up the service and deployment for the web app
-6. `sh scripts/run_db_command.sh <POD_NAME>` - Seed your database against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`)
+#### deployment of database and kafka environemt-files
+1. `kubectl apply -f deployment/microservice/db-configmap.yaml` - Set up environment variables for the pods which use the database
+1. `kubectl apply -f deployment/microservice/kafka-configmap.yaml` - Set up environment variables for the pods which use Kafka
+3. `kubectl apply -f deployment/microservice/db-secret.yaml` - Set up secrets for the pods
+4. `kubectl apply -f deployment/microservice/postgres.yaml` - Set up a Postgres database running PostGIS
+5.  `sh scripts/run_db_microservice_command.sh <POD_NAME>` - Seed your database against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`)
+6.  `curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 700 get_helm.sh && ./get_helm.sh` - install helm
+7.  `helm install udaconnect-kafka oci://registry-1.docker.io/bitnamicharts/kafka --kubeconfig ~/.kube/config -f deployment/microservice/kafka-deployment.yaml` - install Kafka via Helm
+
+#### setup Udaconnect application
+5. `kubectl apply -f deployment/microservice/udaconnect-persons-api.yaml` - Set up the persons service and deployment for the API
+6. `kubectl apply -f deployment/microservice/udaconnect-locations-api.yaml` - Set up the locations service and deployment for the API
+7. `kubectl apply -f deployment/microservice/udaconnect-microservice-frontend-app.yaml` - Set up the  deployment for the web app
+8. `kubectl apply -f deployment/microservice/udaconnect-kafka-locations-consumer.yaml` - set up the service which gets messages from the kafka queue
+9. `kubectl apply -f deployment/microservice/udaconnect-grpc-kafka-locations-producer.yaml` - set up the service which sends messages to the kafka queue
+
+
 
 Manually applying each of the individual `yaml` files is cumbersome but going through each step provides some context on the content of the starter project. In practice, we would have reduced the number of steps by running the command against a directory to apply of the contents: `kubectl apply -f deployment/`.
 
 Note: The first time you run this project, you will need to seed the database with dummy data. Use the command `sh scripts/run_db_command.sh <POD_NAME>` against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`). Subsequent runs of `kubectl apply` for making changes to deployments or services shouldn't require you to seed the database again!
 
 ### Verifying it Works
-Once the project is up and running, you should be able to see 3 deployments and 3 services in Kubernetes:
-`kubectl get pods` and `kubectl get services` - should both return `udaconnect-app`, `udaconnect-api`, and `postgres`
+Once the project is up and running, you should be able to see 4 deployments and 4 services in Kubernetes:
+`kubectl get pods` and `kubectl get services` - should both return `udaconnect-microservice-frontend-app`, `udaconnect-locations-api`,`udaconnect-persons-api`, and `postgres`
 
 
 These pages should also load on your web browser:
-* `http://localhost:30001/` - OpenAPI Documentation
-* `http://localhost:30001/api/` - Base path for API
+* `http://localhost:30001/` - OpenAPI Documentation for persons microservice
+* `http://localhost:30001/api/` - Base path for API for persons microservice
+* `http://localhost:30002/` - OpenAPI Documentation for locations microservice
+* `http://localhost:30002/api/` - Base path for API for locations microservice
 * `http://localhost:30000/` - Frontend ReactJS Application
 
 #### Deployment Note
 You may notice the odd port numbers being served to `localhost`. [By default, Kubernetes services are only exposed to one another in an internal network](https://kubernetes.io/docs/concepts/services-networking/service/). This means that `udaconnect-app` and `udaconnect-api` can talk to one another. For us to connect to the cluster as an "outsider", we need to a way to expose these services to `localhost`.
 
 Connections to the Kubernetes services have been set up through a [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport). (While we would use a technology like an [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) to expose our Kubernetes services in deployment, a NodePort will suffice for development.)
-
-## Development
-### New Services
-New services can be created inside of the `modules/` subfolder. You can choose to write something new with Flask, copy and rework the `modules/api` service into something new, or just create a very simple Python application.
-
-As a reminder, each module should have:
-1. `Dockerfile`
-2. Its own corresponding DockerHub repository
-3. `requirements.txt` for `pip` packages
-4. `__init__.py`
-
-### Docker Images
-`udaconnect-app` and `udaconnect-api` use docker images from `udacity/nd064-udaconnect-app` and `udacity/nd064-udaconnect-api`. To make changes to the application, build your own Docker image and push it to your own DockerHub repository. Replace the existing container registry path with your own.
 
 ## Configs and Secrets
 In `deployment/db-secret.yaml`, the secret variable is `d293aW1zb3NlY3VyZQ==`. The value is simply encoded and not encrypted -- this is ***not*** secure! Anyone can decode it to see what it is.
@@ -140,12 +140,6 @@ This will enable you to connect to the database at `localhost`. You should then 
 To manually connect to the database, you will need software compatible with PostgreSQL.
 * CLI users will find [psql](http://postgresguide.com/utilities/psql.html) to be the industry standard.
 * GUI users will find [pgAdmin](https://www.pgadmin.org/) to be a popular open-source solution.
-
-## Architecture Diagrams
-Your architecture diagram should focus on the services and how they talk to one another. For our project, we want the diagram in a `.png` format. Some popular free software and tools to create architecture diagrams:
-1. [Lucidchart](https://www.lucidchart.com/pages/)
-2. [Google Docs](docs.google.com) Drawings (In a Google Doc, _Insert_ - _Drawing_ - _+ New_)
-3. [Diagrams.net](https://app.diagrams.net/)
 
 ## Tips
 * We can access a running Docker container using `kubectl exec -it <pod_id> sh`. From there, we can `curl` an endpoint to debug network issues.
