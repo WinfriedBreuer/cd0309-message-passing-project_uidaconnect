@@ -1,7 +1,7 @@
 The Udaconnect Monolith was refactored to a Microservice strategy, the following design decisions were made for this approach:
 
 Services:
-Two Services were introduced due to existing endpoints, which should not be broken and because of storage in the database which also contains two tables:
+Two Services were introduced due to existing endpoints, which should still work as of now and because of storage in the database which also contains two tables:
 - Persons Service
     -- post via REST
     -- get via REST
@@ -12,6 +12,13 @@ Two Services were introduced due to existing endpoints, which should not be brok
 The get Methods for both services are used by the Frontend Application, the post services can be used by other clients
 
 Message Passing Strategies:
-Persons is expected to not exceed several thousands of persons, so this can be interfaced by usual REST APIs.
-For locations data structure there might be several millions of records, so gRPC was choosen for GET because gRPC has better performance and because the gRPC data structure are more complex than in persons data structures.
-For POSTing/Creating new locations and connections (persons/locations combinations) kafka was choosen, because of asynchronous calls can be made when ingesting data and because of its higher performance in comparison to REST. 
+Persons, locations and connect GET methods are expected to not exceed several thousands of persons in the long run, so this can be interfaced by usual REST APIs.
+
+For locations data structure there might be several millions of records,
+so a comination of gRPC and Kafka was choosen for inserting  because gRPC
+has better performance, is more scalable and gRPC data structure are more
+complex than in persons data structures, so they should be validated.
+
+For POSTing/Creating new locations and connections (persons/locations
+combinations) kafka was choosen, because of asynchronous calls can be made
+when ingesting data and because of its higher performance in comparison to REST. 
